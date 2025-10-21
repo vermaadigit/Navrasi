@@ -2,7 +2,9 @@ import axios from "axios";
 import type { Product, User, ApiResponse, PaginatedResponse } from "../types";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+  import.meta.env.VITE_API_URL;
+
+console.log("Frontend - src/services/api.ts", API_BASE_URL);
 
 // Create axios instance with default config
 const api = axios.create({
