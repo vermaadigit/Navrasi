@@ -3,10 +3,13 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const session = require("express-session");
 require("dotenv").config();
 
 const { sequelize } = require("./models");
+const passport = require("./config/passport");
 const adminRoutes = require("./routes/admin.routes");
+const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const errorMiddleware = require("./middleware/error.middleware");
 
@@ -26,10 +29,27 @@ app.use(
   })
 );
 
+// Session configuration (required for passport)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-session-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Logging
 if (process.env.NODE_ENV === "development") {
@@ -46,6 +66,7 @@ app.get("/health", (req, res) => {
 });
 
 // API Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
 

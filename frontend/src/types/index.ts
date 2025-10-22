@@ -1,3 +1,5 @@
+// types/index.ts
+
 export interface Product {
   id: string;
   title: string;
@@ -17,6 +19,11 @@ export interface User {
   name: string;
   email: string;
   role: "admin" | "customer";
+  avatar?: string; // Add this
+  authProvider: "local" | "google"; // Add this - REQUIRED
+  isEmailVerified?: boolean; // Add this
+  createdAt?: string; // Optional
+  updatedAt?: string; // Optional
 }
 
 export interface CartItem {
@@ -43,4 +50,21 @@ export interface PaginatedResponse<T> {
     total: number;
     totalPages: number;
   };
+}
+
+// Additional helpful types for authentication
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
 }

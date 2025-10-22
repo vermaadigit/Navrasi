@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { adminApi } from '../../services/api';
 import { useAuthStore } from '../../store/useAuthStore';
 import Input from '../common/Input';
@@ -11,7 +11,7 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const setUser = useAuthStore((state) => state.setUser);
+  const { login } = useAuthStore();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -21,11 +21,15 @@ export default function AdminLogin() {
     try {
       const response = await adminApi.login(email, password);
       if (response.success && response.data) {
-        setUser(response.data.user);
+        login(response.data.user, response.data.token);
         navigate('/admin');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      if (err.message === 'Access denied. Admin privileges required.') {
+        setError('Access denied. You must be an admin to access this area.');
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -48,7 +52,7 @@ export default function AdminLogin() {
               {error}
             </div>
           )}
-          
+
           <Input
             label="Email Address"
             type="email"
@@ -68,11 +72,20 @@ export default function AdminLogin() {
           />
 
           <Button type="submit" isLoading={loading} className="w-full" size="lg">
-            Sign In
+            Sign In as Admin
           </Button>
 
+          <div className="text-center">
+            <Link
+              to="/login"
+              className="text-sm text-secondary-600 hover:text-primary-600"
+            >
+              ← Back to regular login
+            </Link>
+          </div>
+
           <div className="text-sm text-center text-secondary-600">
-            <p>Default credentials:</p>
+            <p>Default admin credentials:</p>
             <p className="font-mono bg-secondary-50 p-2 rounded mt-2">
               Email: admin@navrasi.com<br />
               Password: Admin@123

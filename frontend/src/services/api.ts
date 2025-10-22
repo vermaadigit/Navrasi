@@ -1,8 +1,7 @@
 import axios from "axios";
 import type { Product, User, ApiResponse, PaginatedResponse } from "../types";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 console.log("Frontend - src/services/api.ts", API_BASE_URL);
 
@@ -33,17 +32,33 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/admin/login";
+      // Don't redirect admin login for regular auth errors
+      if (!window.location.pathname.includes("/admin")) {
+        window.location.href = "/login";
+      } else {
+        window.location.href = "/admin/login";
+      }
     }
     return Promise.reject(error);
   }
 );
 
-// Admin API
-export const adminApi = {
+// Auth API
+export const authApi = {
+  register: async (name: string, email: string, password: string) => {
+    const { data } = await api.post<ApiResponse<{ user: User; token: string }>>(
+      "/auth/register",
+      { name, email, password }
+    );
+    if (data.data?.token) {
+      localStorage.setItem("token", data.data.token);
+    }
+    return data;
+  },
+
   login: async (email: string, password: string) => {
     const { data } = await api.post<ApiResponse<{ user: User; token: string }>>(
-      "/admin/login",
+      "/auth/login",
       { email, password }
     );
     if (data.data?.token) {
@@ -53,13 +68,48 @@ export const adminApi = {
   },
 
   logout: async () => {
-    const { data } = await api.post<ApiResponse<null>>("/admin/logout");
+    const { data } = await api.post<ApiResponse<null>>("/auth/logout");
     localStorage.removeItem("token");
     return data;
   },
 
   getCurrentUser: async () => {
-    const { data } = await api.get<ApiResponse<{ user: User }>>("/admin/me");
+    const { data } = await api.get<ApiResponse<{ user: User }>>("/auth/me");
+    return data;
+  },
+
+  googleAuth: () => {
+    window.location.href = `${API_BASE_URL}/auth/google`;
+  },
+};
+
+// Admin API
+export const adminApi = {
+  login: async (email: string, password: string) => {
+    const { data } = await api.post<ApiResponse<{ user: User; token: string }>>(
+      "/auth/login",
+      { email, password }
+    );
+
+    // Check if user has admin role
+    if (data.data?.user.role !== "admin") {
+      throw new Error("Access denied. Admin privileges required.");
+    }
+
+    if (data.data?.token) {
+      localStorage.setItem("token", data.data.token);
+    }
+    return data;
+  },
+
+  logout: async () => {
+    const { data } = await api.post<ApiResponse<null>>("/auth/logout");
+    localStorage.removeItem("token");
+    return data;
+  },
+
+  getCurrentUser: async () => {
+    const { data } = await api.get<ApiResponse<{ user: User }>>("/auth/me");
     return data;
   },
 };
