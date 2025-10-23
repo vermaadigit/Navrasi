@@ -77,6 +77,7 @@ const User = sequelize.define(
   {
     tableName: "users",
     timestamps: true,
+    underscored: true,
     hooks: {
       // Hash password before creating user (only for local auth)
       beforeCreate: async (user) => {

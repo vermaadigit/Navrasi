@@ -3,6 +3,7 @@ const { body } = require("express-validator");
 const { User } = require("../models");
 const { jwtSecret, jwtExpiresIn, cookieOptions } = require("../config/auth");
 const { successResponse, errorResponse } = require("../utils/response");
+const { uploadImage, deleteImage } = require("../config/cloudinary");
 
 /**
  * Generate JWT token
@@ -194,6 +195,64 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
+/**
+ * Validation for profile update
+ */
+const updateProfileValidation = [
+  body("name")
+    .optional()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name must be between 2 and 100 characters"),
+];
+
+/**
+ * Update user profile
+ */
+const updateProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { name } = req.body;
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return errorResponse(res, "User not found", 404);
+    }
+
+    // Handle avatar upload
+    let avatarUrl = user.avatar;
+    if (req.file) {
+      // Delete old avatar if exists
+      if (user.avatar && !user.avatar.includes("googleusercontent")) {
+        await deleteImage(user.avatar);
+      }
+
+      // Upload new avatar
+      avatarUrl = await uploadImage(req.file.buffer, req.file.originalname);
+    }
+
+    // Update user
+    await user.update({
+      name: name || user.name,
+      avatar: avatarUrl,
+    });
+
+    return successResponse(res, "Profile updated successfully", {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        authProvider: user.authProvider,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 module.exports = {
   register,
   login,
@@ -202,4 +261,6 @@ module.exports = {
   getCurrentUser,
   registerValidation,
   loginValidation,
+  updateProfile,
+  updateProfileValidation,
 };

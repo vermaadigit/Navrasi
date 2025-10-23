@@ -4,6 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/auth.controller");
 const { authenticate } = require("../middleware/auth.middleware");
 const validate = require("../middleware/validation.middleware");
+const upload = require("../utils/upload");
 
 /**
  * @route POST /api/auth/register
@@ -56,6 +57,21 @@ router.get(
  * @access Private
  */
 router.post("/logout", authenticate, authController.logout);
+
+/**
+ * @route PUT /api/auth/profile
+ * @desc Update user profile
+ * @access Private
+ */
+router.put(
+  "/profile",
+  authenticate,
+  upload.single("avatar"),
+  authController.updateProfileValidation,
+  validate,
+  authController.updateProfile
+);
+
 
 /**
  * @route GET /api/auth/me
