@@ -12,6 +12,7 @@ const adminRoutes = require("./routes/admin.routes");
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const errorMiddleware = require("./middleware/error.middleware");
+const orderRoutes = require("./routes/order.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,6 +70,7 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorMiddleware);
