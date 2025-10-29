@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useRef, useEffect } from "react";
+import NavrasiLogo from "../assets/Navrasi_Logo_Home.png";
 
 const Header = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -46,28 +47,35 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <nav className="container mx-auto px-4 py-4">
+    <header className="bg-gradient-to-r from-white via-gray-50 to-white shadow-lg sticky top-0 z-50 border-b border-gray-200 backdrop-blur-md">
+      <nav className="header-container mx-auto px-6 py-6">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-blue-600 hover:text-blue-700">
-            Navrasi
+          {/* Logo with Image */}
+          <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <img
+              src={NavrasiLogo}
+              alt="Navrasi Logo"
+              className="h-12 w-auto object-contain"
+              loading="eager"
+              fetchPriority="high"
+            />
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-8">
             <Link 
               to="/products" 
-              className="text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg"
             >
               Products
             </Link>
             <Link 
               to="/cart" 
-              className="text-gray-700 hover:text-blue-600 transition-colors relative"
+              className="text-gray-700 hover:text-blue-600 transition-colors relative group"
+              aria-label="Shopping Cart"
             >
               <svg
-                className="w-6 h-6"
+                className="w-7 h-7"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -83,14 +91,14 @@ const Header = () => {
           </div>
 
           {/* Auth Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             {isAuthenticated ? (
               <>
                 {/* User Navigation */}
                 {!isAdmin && (
                   <Link
                     to="/my-orders"
-                    className="hidden md:block text-gray-700 hover:text-blue-600 transition-colors"
+                    className="hidden md:block text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg"
                   >
                     My Orders
                   </Link>
@@ -101,39 +109,40 @@ const Header = () => {
                   <>
                     <Link
                       to="/admin/dashboard"
-                      className="hidden md:block text-gray-700 hover:text-blue-600 transition-colors"
+                      className="hidden md:block text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg"
                     >
                       Dashboard
                     </Link>
                     <Link
                       to="/admin/orders"
-                      className="hidden md:block text-gray-700 hover:text-blue-600 transition-colors"
+                      className="hidden md:block text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg"
                     >
                       All Orders
                     </Link>
                   </>
                 )}
 
-                {/* Profile Dropdown */}
+                {/* Profile Dropdown - Compact Version */}
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="flex items-center gap-2 focus:outline-none"
+                    className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full p-1"
+                    aria-label="User menu"
                   >
                     <img
                       src={user?.avatar || getDefaultAvatar(user?.name)}
                       alt={user?.name || "User"}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 hover:border-blue-500 transition-colors"
+                      className="w-11 h-11 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500 transition-all shadow-sm"
+                      loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        // Prevent infinite loop by checking if we're already showing default
                         if (!target.src.startsWith('data:image/svg+xml')) {
                           target.src = getDefaultAvatar(user?.name);
                         }
                       }}
                     />
                     <svg
-                      className={`w-4 h-4 text-gray-600 transition-transform ${
+                      className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${
                         showDropdown ? "rotate-180" : ""
                       }`}
                       fill="none"
@@ -149,61 +158,63 @@ const Header = () => {
                     </svg>
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {/* Dropdown Menu - Compact Size */}
                   {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                      <div className="px-4 py-3 border-b border-gray-200">
-                        <p className="text-sm font-semibold text-gray-900">
+                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                      <div className="px-3 py-2.5 border-b border-gray-200 bg-gray-50">
+                        <p className="text-xs font-semibold text-gray-900 truncate">
                           {user?.name}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="text-[10px] text-gray-500 truncate mt-0.5">
                           {user?.email}
                         </p>
-                        <span className="inline-block mt-1 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                        <span className="inline-block mt-1.5 px-2 py-0.5 text-[10px] bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full font-medium">
                           {user?.role === "admin" ? "Admin" : "Customer"}
                         </span>
                       </div>
 
-                      <Link
-                        to="/profile"
-                        onClick={() => setShowDropdown(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                      <div className="py-1">
+                        <Link
+                          to="/profile"
+                          onClick={() => setShowDropdown(false)}
+                          className="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:bg-blue-50 transition-colors"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        Profile Settings
-                      </Link>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          Profile Settings
+                        </Link>
 
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                          />
-                        </svg>
-                        Logout
-                      </button>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                          </svg>
+                          Logout
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -212,13 +223,13 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  className="px-5 py-2.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-lg"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                  className="px-7 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg text-lg"
                 >
                   Sign Up
                 </Link>
@@ -228,15 +239,15 @@ const Header = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden mt-4 flex items-center justify-around border-t pt-4">
-          <Link to="/products" className="text-gray-700 hover:text-blue-600">
+        <div className="md:hidden mt-5 flex items-center justify-around border-t pt-5">
+          <Link to="/products" className="text-gray-700 hover:text-blue-600 font-medium">
             Products
           </Link>
-          <Link to="/cart" className="text-gray-700 hover:text-blue-600">
+          <Link to="/cart" className="text-gray-700 hover:text-blue-600 font-medium">
             Cart
           </Link>
           {isAuthenticated && !isAdmin && (
-            <Link to="/my-orders" className="text-gray-700 hover:text-blue-600">
+            <Link to="/my-orders" className="text-gray-700 hover:text-blue-600 font-medium">
               Orders
             </Link>
           )}
