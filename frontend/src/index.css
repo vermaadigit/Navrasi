@@ -2,6 +2,9 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* Import Google Fonts - Premium Minimalist Fashion Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -9,17 +12,40 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #ffffff;
   color: #1e293b;
+  letter-spacing: 0.01em;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Typography Hierarchy */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.heading-serif {
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+}
+
+.body-light {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 300;
 }
 
 /* Custom scrollbar */
@@ -49,22 +75,62 @@ body {
   padding: 0 1rem;
 }
 
+.header-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 5px auto;
+    padding: 0 1rem;
+}
+
 .btn-primary {
   @apply bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 0.03em;
 }
 
 .btn-secondary {
   @apply bg-secondary-200 hover:bg-secondary-300 text-secondary-900 font-medium px-6 py-2.5 rounded-lg transition-colors duration-200;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 0.03em;
 }
 
 .btn-outline {
   @apply border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-200;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 0.03em;
 }
 
 .input-field {
   @apply w-full px-4 py-2.5 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  font-family: 'Work Sans', sans-serif;
 }
 
 .card {
   @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300;
+}
+
+/* Fashion-specific styles */
+.product-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.product-description {
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.price-tag {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
