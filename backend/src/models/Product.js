@@ -74,6 +74,35 @@ const Product = sequelize.define(
       allowNull: true,
       defaultValue: "General",
     },
+    // NEW: Feature field for Sales, Trending, Top Rated, New Collection
+    feature: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: [],
+      validate: {
+        isValidFeature(value) {
+          if (!Array.isArray(value)) {
+            throw new Error("Feature must be an array");
+          }
+          const validFeatures = [
+            "Sales",
+            "Trending",
+            "Top Rated",
+            "New Collection",
+          ];
+          const invalidFeatures = value.filter(
+            (f) => !validFeatures.includes(f)
+          );
+          if (invalidFeatures.length > 0) {
+            throw new Error(
+              `Invalid features: ${invalidFeatures.join(
+                ", "
+              )}. Valid features are: ${validFeatures.join(", ")}`
+            );
+          }
+        },
+      },
+    },
     isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
@@ -89,6 +118,7 @@ const Product = sequelize.define(
       { fields: ["category"] },
       { fields: ["price"] },
       { fields: ["created_at"] },
+      { fields: ["feature"], using: "gin" }, // GIN index for array queries
     ],
   }
 );
