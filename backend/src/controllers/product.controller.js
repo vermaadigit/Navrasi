@@ -33,7 +33,6 @@ const productValidation = [
   body("sizeOptions")
     .optional()
     .customSanitizer((value) => {
-      // Parse JSON string to array if it's a string
       if (typeof value === "string") {
         try {
           return JSON.parse(value);
@@ -48,7 +47,6 @@ const productValidation = [
   body("colorOptions")
     .optional()
     .customSanitizer((value) => {
-      // Parse JSON string to array if it's a string
       if (typeof value === "string") {
         try {
           return JSON.parse(value);
@@ -60,8 +58,39 @@ const productValidation = [
     })
     .isArray()
     .withMessage("Color options must be an array"),
+  // NEW: Feature validation
+  body("feature")
+    .optional()
+    .customSanitizer((value) => {
+      if (typeof value === "string") {
+        try {
+          return JSON.parse(value);
+        } catch (e) {
+          return value;
+        }
+      }
+      return value;
+    })
+    .isArray()
+    .withMessage("Feature must be an array")
+    .custom((value) => {
+      const validFeatures = [
+        "Sales",
+        "Trending",
+        "Top Rated",
+        "New Collection",
+      ];
+      const invalidFeatures = value.filter((f) => !validFeatures.includes(f));
+      if (invalidFeatures.length > 0) {
+        throw new Error(
+          `Invalid features: ${invalidFeatures.join(
+            ", "
+          )}. Valid features are: Sales, Trending, Top Rated, New Collection`
+        );
+      }
+      return true;
+    }),
 ];
-
 
 /**
  * Get all products with pagination, search, filter, and sort
@@ -73,6 +102,7 @@ const getAllProducts = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 12;
     const search = req.query.search || "";
     const category = req.query.category || "";
+    const feature = req.query.feature || ""; // NEW: Filter by feature
     const sortBy = req.query.sortBy || "createdAt";
     const sortOrder = req.query.sortOrder || "DESC";
     const minPrice = parseFloat(req.query.minPrice) || 0;
@@ -90,6 +120,13 @@ const getAllProducts = async (req, res, next) => {
 
     if (category) {
       where.category = category;
+    }
+
+    // NEW: Filter by feature
+    if (feature) {
+      where.feature = {
+        [Op.contains]: [feature], // PostgreSQL array contains operator
+      };
     }
 
     where.price = {
@@ -152,12 +189,12 @@ const createProduct = async (req, res, next) => {
       category,
       sizeOptions,
       colorOptions,
+      feature, // NEW: Feature field
     } = req.body;
 
     // Handle image uploads
     let images = [];
     if (req.files && req.files.length > 0) {
-      // Upload images to Cloudinary
       const uploadPromises = req.files.map((file) =>
         uploadImage(file.buffer, file.originalname)
       );
@@ -173,6 +210,7 @@ const createProduct = async (req, res, next) => {
       category: category || "General",
       sizeOptions: sizeOptions || [],
       colorOptions: colorOptions || [],
+      feature: feature || [], // NEW: Feature field
       images,
     });
 
@@ -196,6 +234,7 @@ const updateProduct = async (req, res, next) => {
       category,
       sizeOptions,
       colorOptions,
+      feature, // NEW: Feature field
       existingImages,
     } = req.body;
 
@@ -246,6 +285,7 @@ const updateProduct = async (req, res, next) => {
       category: category || product.category,
       sizeOptions: sizeOptions || product.sizeOptions,
       colorOptions: colorOptions || product.colorOptions,
+      feature: feature !== undefined ? feature : product.feature, // NEW: Feature field
       images: allImages,
     });
 
@@ -275,12 +315,8 @@ const deleteProduct = async (req, res, next) => {
       }
     }
 
-    // Soft delete (set isActive to false) or hard delete
-    // For soft delete:
+    // Soft delete (set isActive to false)
     await product.update({ isActive: false });
-
-    // For hard delete, uncomment below:
-    // await product.destroy();
 
     return successResponse(res, "Product deleted successfully");
   } catch (error) {
@@ -312,6 +348,54 @@ const getCategories = async (req, res, next) => {
   }
 };
 
+/**
+ * NEW: Get products by feature (Sales, Trending, Top Rated, New Collection)
+ */
+const getProductsByFeature = async (req, res, next) => {
+  try {
+    const { feature } = req.params;
+    const validFeatures = ["Sales", "Trending", "Top Rated", "New Collection"];
+
+    if (!validFeatures.includes(feature)) {
+      return errorResponse(
+        res,
+        `Invalid feature. Valid features are: ${validFeatures.join(", ")}`,
+        400
+      );
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Product.findAndCountAll({
+      where: {
+        isActive: true,
+        feature: {
+          [Op.contains]: [feature],
+        },
+      },
+      limit,
+      offset,
+      order: [["createdAt", "DESC"]],
+      attributes: { exclude: ["isActive"] },
+    });
+
+    return paginatedResponse(
+      res,
+      `${feature} products retrieved successfully`,
+      rows,
+      {
+        page,
+        limit,
+        total: count,
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -319,5 +403,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getCategories,
+  getProductsByFeature, // NEW: Export new function
   productValidation,
 };

@@ -30,7 +30,6 @@ app.use(
   })
 );
 
-// Session configuration (required for passport)
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your-session-secret",
@@ -38,7 +37,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      maxAge: null,
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
     },
   })
 );

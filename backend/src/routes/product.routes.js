@@ -20,6 +20,14 @@ router.get("/", productController.getAllProducts);
 router.get("/categories", productController.getCategories);
 
 /**
+ * NEW: Get products by feature (Sales, Trending, Top Rated, New Collection)
+ * @route   GET /api/products/feature/:feature
+ * @desc    Get products by feature
+ * @access  Public
+ */
+router.get("/feature/:feature", productController.getProductsByFeature);
+
+/**
  * @route   GET /api/products/:id
  * @desc    Get single product by ID
  * @access  Public
@@ -35,7 +43,7 @@ router.post(
   "/",
   authenticate,
   isAdmin,
-  upload.array("images", 5), // Allow up to 5 images
+  upload.array("images", 5),
   productController.productValidation,
   validate,
   productController.createProduct
