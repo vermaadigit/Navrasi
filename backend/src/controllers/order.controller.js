@@ -6,6 +6,8 @@ const {
   errorResponse,
   paginatedResponse,
 } = require("../utils/response");
+const sendEmail = require("../emails/emailService");
+const orderEmail = require("../emails/templates/orderEmail");
 
 /**
  * Validation rules for creating order
@@ -104,6 +106,32 @@ const createOrder = async (req, res, next) => {
         stock: product.stock - item.quantity,
       });
     }
+
+    // Email to Admin & User
+
+    // const user = await User.findByPk(userId);
+
+    // await sendEmail(
+    //   user.email,
+    //   `Order Confirmed – #${order.orderNumber}`,
+    //   orderEmail({
+    //     name: user.name,
+    //     orderId: order.orderNumber,
+    //     items: orderItems,
+    //     total: totalAmount.toFixed(2),
+    //   })
+    // );
+
+    // await sendEmail(
+    //   process.env.ADMIN_EMAIL_MAILGUN,
+    //   `🛒 New Order Placed – #${order.orderNumber}`,
+    //   orderEmail({
+    //     name: user.name,
+    //     orderId: order.orderNumber,
+    //     items: orderItems,
+    //     total: totalAmount.toFixed(2),
+    //   })
+    // );
 
     return successResponse(
       res,

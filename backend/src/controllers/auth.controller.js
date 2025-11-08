@@ -4,6 +4,8 @@ const { User } = require("../models");
 const { jwtSecret, jwtExpiresIn, cookieOptions } = require("../config/auth");
 const { successResponse, errorResponse } = require("../utils/response");
 const { uploadImage, deleteImage } = require("../config/cloudinary");
+const sendEmail = require("../emails/emailService");
+const welcomeEmail = require("../emails/templates/welcomeEmail");
 
 /**
  * Generate JWT token
@@ -70,6 +72,16 @@ const register = async (req, res, next) => {
       role: "customer",
       authProvider: "local",
     });
+
+    // Email API
+
+    // await sendEmail(
+    //   user.email,
+    //   "Welcome to Navrasi Store 🎉",
+    //   welcomeEmail(user.name)
+    // );
+
+    // console.log("Mail Successfully Sent++++++++++++++++", user.email);
 
     // Generate token
     const token = generateToken(user);

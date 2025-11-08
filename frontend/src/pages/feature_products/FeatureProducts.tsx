@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios, { AxiosError } from "../../utils/axios";
+import { motion } from "framer-motion";
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 
@@ -58,48 +59,42 @@ const FeatureProducts = () => {
     }
   };
 
-  const getFeatureColor = (feature: string) => {
+  const getFeatureBadgeColor = (feature: string) => {
     switch (feature) {
       case "Sales":
-        return "from-red-500 to-pink-500";
+        return "bg-red-600 text-white";
       case "Trending":
-        return "from-purple-500 to-indigo-500";
+        return "bg-amber-600 text-white";
       case "Top Rated":
-        return "from-yellow-500 to-orange-500";
+        return "bg-yellow-500 text-white";
       case "New Collection":
-        return "from-green-500 to-teal-500";
+        return "bg-green-600 text-white";
       default:
-        return "from-blue-500 to-cyan-500";
+        return "bg-stone-900 text-white";
+    }
+  };
+
+  const getFeatureDescription = (feature: string) => {
+    switch (feature) {
+      case "Sales":
+        return "Exclusive deals and special offers on selected items";
+      case "Trending":
+        return "Most popular products loved by our community";
+      case "Top Rated":
+        return "Highest rated products based on customer reviews";
+      case "New Collection":
+        return "Fresh arrivals and latest additions to our collection";
+      default:
+        return "Curated selection of premium products";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
         <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <svg
-              className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            <p className="text-gray-600">Loading products...</p>
-          </div>
+        <div className="flex items-center justify-center py-32">
+          <div className="w-12 h-12 border-2 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
         </div>
         <Footer />
       </div>
@@ -107,139 +102,214 @@ const FeatureProducts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
       <Header />
       
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:pt-28">
+        {/* Breadcrumb */}
+        <motion.nav 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <ol className="flex items-center gap-2 text-sm">
+            <li>
+              <Link to="/" className="text-stone-500 hover:text-stone-900 transition-colors font-light">
+                Home
+              </Link>
+            </li>
+            <li className="text-stone-300">/</li>
+            <li>
+              <Link to="/products" className="text-stone-500 hover:text-stone-900 transition-colors font-light">
+                Products
+              </Link>
+            </li>
+            <li className="text-stone-300">/</li>
+            <li className="text-stone-900 font-light">{feature}</li>
+          </ol>
+        </motion.nav>
+
+        {/* Page Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          {/* Back Button */}
           <Link
             to="/products"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4"
+            className="inline-flex items-center gap-2 text-sm text-stone-600 hover:text-stone-900 transition-colors mb-8 font-light group"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Products
+            <span>Back to Products</span>
           </Link>
           
-          <div className="flex items-center gap-4 mb-4">
-            <div className={`p-4 rounded-xl bg-gradient-to-r ${getFeatureColor(feature || '')} text-white shadow-lg`}>
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900">
-                {feature}
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Explore our {feature?.toLowerCase()} collection
-              </p>
+          {/* Feature Badge & Title */}
+          <div className="flex items-start gap-6 mb-6">
+            <div className={`px-4 py-2 ${getFeatureBadgeColor(feature || '')} rounded-sm text-xs tracking-wide font-light uppercase`}>
+              {feature}
             </div>
           </div>
-          
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              Found <strong>{products.length}</strong> products in this collection
+
+          <h1 className="text-4xl sm:text-5xl font-light text-stone-900 mb-4 tracking-tight">
+            {feature}
+          </h1>
+          <p className="text-stone-600 font-light max-w-2xl leading-relaxed">
+            {getFeatureDescription(feature || '')}
+          </p>
+        </motion.div>
+
+        {/* Product Count */}
+        {products.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8 pb-6 border-b border-stone-200"
+          >
+            <p className="text-sm text-stone-500 font-light">
+              {products.length} {products.length === 1 ? 'product' : 'products'} found
             </p>
-          </div>
-        </div>
+          </motion.div>
+        )}
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-sm"
+          >
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm text-red-800 font-light">{error}</p>
+            </div>
+          </motion.div>
         )}
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <svg
-              className="w-24 h-24 text-gray-300 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white border border-stone-200 rounded-sm p-16 text-center"
+          >
+            <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <svg className="w-16 h-16 text-stone-300" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-light text-stone-900 mb-3">
               No products found
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-stone-600 mb-6 font-light">
               No products available in this collection at the moment
             </p>
             <Link
               to="/products"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 font-light tracking-wide"
             >
-              View All Products
+              <span>Explore All Products</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
             </Link>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <Link
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((product, index) => (
+              <motion.div
                 key={product.id}
-                to={`/products/${product.id}`}
-                className="bg-white rounded-lg shadow hover:shadow-xl transition-shadow overflow-hidden group"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.6 }}
               >
-                {/* Product Image */}
-                <div className="relative aspect-square overflow-hidden bg-gray-200">
-                  <img
-                    src={product.images[0] || "/placeholder-product.png"}
-                    alt={product.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://via.placeholder.com/500?text=No+Image";
-                    }}
-                  />
-                  {/* Feature Badge */}
-                  <div className={`absolute top-2 left-2 px-3 py-1 rounded-full bg-gradient-to-r ${getFeatureColor(feature || '')} text-white text-xs font-semibold shadow-lg`}>
-                    {feature}
-                  </div>
-                  {product.stock === 0 && (
-                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                      <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
-                        Out of Stock
-                      </span>
+                <Link
+                  to={`/products/${product.id}`}
+                  className="block group"
+                >
+                  {/* Product Image */}
+                  <div className="relative aspect-[3/4] overflow-hidden bg-stone-100 mb-4 rounded-sm">
+                    <img
+                      src={product.images[0] || "/placeholder-product.png"}
+                      alt={product.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://via.placeholder.com/500x667?text=NAVRASI";
+                      }}
+                    />
+                    
+                    {/* Feature Badge */}
+                    <div className={`absolute top-4 left-4 px-3 py-1 ${getFeatureBadgeColor(feature || '')} text-xs tracking-wide font-light rounded-sm`}>
+                      {feature?.toUpperCase()}
                     </div>
-                  )}
-                </div>
-
-                {/* Product Details */}
-                <div className="p-4">
-                  <p className="text-xs text-gray-500 uppercase mb-1">
-                    {product.category}
-                  </p>
-                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {product.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                    {product.description}
-                  </p>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-blue-600">
-                      ₹{product.price}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {product.stock} in stock
-                    </span>
+                    
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                        <span className="text-stone-900 text-sm tracking-wide font-light uppercase">
+                          Sold Out
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-300" />
                   </div>
-                </div>
-              </Link>
+
+                  {/* Product Details */}
+                  <div className="space-y-2">
+                    <p className="text-xs text-stone-500 uppercase tracking-widest">
+                      {product.category}
+                    </p>
+                    <h3 className="font-light text-stone-900 group-hover:text-amber-800 transition-colors line-clamp-2 text-sm">
+                      {product.title}
+                    </h3>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-base text-stone-900 font-light">
+                        ₹{product.price.toLocaleString()}
+                      </span>
+                      {product.stock > 0 && product.stock < 10 && (
+                        <span className="text-xs text-amber-700 font-light">
+                          Only {product.stock} left
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
             ))}
           </div>
         )}
+
+        {/* Back to Top Button */}
+        {products.length > 12 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-16 text-center"
+          >
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-sm hover:border-stone-300 hover:bg-stone-50 transition-all font-light"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+              </svg>
+              <span>Back to Top</span>
+            </button>
+          </motion.div>
+        )}
       </div>
+      
       <Footer />
     </div>
   );

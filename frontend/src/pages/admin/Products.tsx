@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "../../utils/axios";
 import Header from "../../components/layout/Header";
 import Footer from '../../components/layout/Footer';
+import { motion } from 'framer-motion';
 
 interface Product {
   id: string;
@@ -254,27 +255,24 @@ const AdminProducts = () => {
   const getFeatureColor = (feature: string) => {
     switch (feature) {
       case "Sales":
-        return "from-red-500 to-pink-500";
+        return "bg-red-600";
       case "Trending":
-        return "from-purple-500 to-indigo-500";
+        return "bg-purple-600";
       case "Top Rated":
-        return "from-yellow-500 to-orange-500";
+        return "bg-amber-600";
       case "New Collection":
-        return "from-green-500 to-teal-500";
+        return "bg-green-600";
       default:
-        return "from-blue-500 to-cyan-500";
+        return "bg-blue-600";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
         <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl"></div>
-          </div>
+        <div className="flex items-center justify-center py-32">
+          <div className="w-12 h-12 border-2 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
         </div>
         <Footer />
       </div>
@@ -282,102 +280,117 @@ const AdminProducts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
       <Header />
 
-      {/* Background Effects */}
+      {/* Decorative elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl top-20 -left-20 animate-pulse"></div>
-        <div className="absolute w-96 h-96 bg-pink-500/10 rounded-full blur-3xl bottom-20 -right-20 animate-pulse delay-1000"></div>
+        <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-br from-amber-100/20 to-stone-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tr from-stone-100/30 to-amber-50/30 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="profile-container mx-auto px-4 py-12 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
         {/* Page Header */}
-        <div className="flex flex-wrap items-center justify-between mb-12 gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-1 h-10 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
-              <h1 className="text-4xl font-bold text-white">Product Management</h1>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-16"
+        >
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-amber-700 mb-3 font-medium">
+                Admin Dashboard
+              </p>
+              <h1 className="text-5xl sm:text-6xl font-light text-stone-900 tracking-tight mb-4">
+                Product Management
+              </h1>
+              <p className="text-stone-600 font-light leading-relaxed">
+                Manage your product catalog and inventory
+              </p>
             </div>
-            <p className="text-gray-400 ml-7">Manage your product catalog</p>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              to="/admin/dashboard"
-              className="px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Dashboard
-            </Link>
-            <button
-              onClick={openAddModal}
-              className="relative group overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative px-6 py-3 text-white font-bold flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <div className="flex items-center gap-3">
+              <Link
+                to="/admin/dashboard"
+                className="px-6 py-3 bg-white border border-stone-200 text-stone-900 rounded-sm hover:bg-stone-50 hover:border-stone-300 transition-all flex items-center gap-2 font-light"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Dashboard
+              </Link>
+              <button
+                onClick={openAddModal}
+                className="px-6 py-3 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 flex items-center gap-2 font-light tracking-wide shadow-lg"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
                 Add Product
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium text-red-400">{error}</p>
+              </button>
             </div>
           </div>
+        </motion.div>
+
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-red-50 border border-red-200 rounded-sm"
+          >
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm text-red-800 font-light">{error}</p>
+            </div>
+          </motion.div>
         )}
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl border border-white/10 rounded-2xl p-20 text-center shadow-2xl">
-            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white border border-stone-200 rounded-sm p-16 text-center"
+          >
+            <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <svg className="w-16 h-16 text-stone-300" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-3">No products yet</h3>
-            <p className="text-gray-400 mb-8">Click "Add Product" to create your first product</p>
+            <h3 className="text-2xl font-light text-stone-900 mb-3">No products yet</h3>
+            <p className="text-stone-600 font-light mb-8">Click "Add Product" to create your first product</p>
             <button
               onClick={openAddModal}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 transform hover:scale-[1.02] shadow-lg font-light tracking-wide"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
               Add Your First Product
             </button>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product, index) => (
+              <motion.div
                 key={product.id}
-                className="bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all group"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="bg-white border border-stone-200 rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all group"
               >
-                <div className="aspect-square bg-white/5 overflow-hidden relative">
+                <div className="aspect-square bg-stone-100 overflow-hidden relative">
                   {product.images && product.images.length > 0 ? (
                     <img
                       src={product.images[0]}
                       alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-600">
-                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <div className="w-full h-full flex items-center justify-center text-stone-300">
+                      <svg className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                   )}
@@ -386,7 +399,7 @@ const AdminProducts = () => {
                       {product.feature.map((feat) => (
                         <span
                           key={feat}
-                          className={`px-3 py-1 bg-gradient-to-r ${getFeatureColor(feat)} text-white text-xs font-bold rounded-lg shadow-lg`}
+                          className={`px-3 py-1 ${getFeatureColor(feat)} text-white text-xs font-light tracking-wide rounded-sm shadow-sm uppercase`}
                         >
                           {feat}
                         </span>
@@ -395,42 +408,42 @@ const AdminProducts = () => {
                   )}
                 </div>
                 <div className="p-5">
-                  <h3 className="font-bold text-lg text-white mb-2 truncate">
+                  <h3 className="font-light text-lg text-stone-900 mb-2 truncate">
                     {product.title}
                   </h3>
-                  <p className="text-sm text-gray-400 mb-3 line-clamp-2">
+                  <p className="text-sm text-stone-600 mb-3 line-clamp-2 font-light">
                     {product.description}
                   </p>
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      ₹{Number(product.price).toFixed(2)}
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-stone-200">
+                    <span className="text-2xl text-stone-900 font-light">
+                      ₹{Number(product.price).toLocaleString()}
                     </span>
-                    <span className="text-sm text-gray-400 px-3 py-1 bg-white/5 rounded-lg border border-white/10">
+                    <span className="text-sm text-stone-600 px-3 py-1 bg-stone-50 rounded-sm border border-stone-200 font-light">
                       Stock: {product.stock}
                     </span>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEditModal(product)}
-                      className="flex-1 px-4 py-2.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-xl hover:bg-blue-500/30 transition-all text-sm font-semibold flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2.5 bg-blue-700 text-white rounded-sm hover:bg-blue-800 transition-all text-sm font-light tracking-wide flex items-center justify-center gap-2"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(product.id)}
-                      className="flex-1 px-4 py-2.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/30 transition-all text-sm font-semibold flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2.5 bg-red-700 text-white rounded-sm hover:bg-red-800 transition-all text-sm font-light tracking-wide flex items-center justify-center gap-2"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                       Delete
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
@@ -438,18 +451,22 @@ const AdminProducts = () => {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl">
-            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 flex items-center justify-between z-10 rounded-t-2xl">
-              <h2 className="text-2xl font-bold text-white">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-sm max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-stone-200 shadow-2xl"
+          >
+            <div className="sticky top-0 bg-stone-900 px-6 py-4 flex items-center justify-between z-10 rounded-t-sm">
+              <h2 className="text-2xl font-light text-white tracking-wide">
                 {editingProduct ? "Edit Product" : "Add New Product"}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+                className="text-white hover:bg-white/20 rounded-sm p-2 transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
@@ -457,7 +474,7 @@ const AdminProducts = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               {/* Title */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Product Title *
                 </label>
                 <input
@@ -465,7 +482,7 @@ const AdminProducts = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all font-light"
                   placeholder="Enter product title"
                   required
                   minLength={3}
@@ -475,7 +492,7 @@ const AdminProducts = () => {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Description *
                 </label>
                 <textarea
@@ -483,7 +500,7 @@ const AdminProducts = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all resize-none font-light"
                   placeholder="Enter product description"
                   required
                 />
@@ -492,7 +509,7 @@ const AdminProducts = () => {
               {/* Price and Stock */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-white mb-3">
+                  <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                     Price (₹) *
                   </label>
                   <input
@@ -500,7 +517,7 @@ const AdminProducts = () => {
                     name="price"
                     value={formData.price}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all font-light"
                     placeholder="0.00"
                     required
                     min="0"
@@ -508,7 +525,7 @@ const AdminProducts = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-white mb-3">
+                  <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                     Stock *
                   </label>
                   <input
@@ -516,7 +533,7 @@ const AdminProducts = () => {
                     name="stock"
                     value={formData.stock}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all font-light"
                     placeholder="0"
                     required
                     min="0"
@@ -526,7 +543,7 @@ const AdminProducts = () => {
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Category
                 </label>
                 <input
@@ -534,7 +551,7 @@ const AdminProducts = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all font-light"
                   placeholder="e.g., T-Shirts, Jeans"
                   maxLength={100}
                 />
@@ -542,26 +559,26 @@ const AdminProducts = () => {
 
               {/* Feature Selection */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Product Features
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {availableFeatures.map((feature) => (
                     <label
                       key={feature}
-                      className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${
+                      className={`flex items-center gap-3 p-4 border rounded-sm cursor-pointer transition-all font-light ${
                         formData.feature.includes(feature)
-                          ? "bg-purple-500/20 border-purple-500/50"
-                          : "bg-white/5 border-white/10 hover:bg-white/10"
+                          ? "bg-stone-900 border-stone-900 text-white"
+                          : "bg-white border-stone-200 hover:bg-stone-50"
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={formData.feature.includes(feature)}
                         onChange={() => handleFeatureChange(feature)}
-                        className="w-5 h-5 text-purple-600 bg-white/10 border-white/20 rounded focus:ring-purple-500 focus:ring-2"
+                        className="w-5 h-5 text-stone-900 bg-white border-stone-300 rounded focus:ring-stone-900 focus:ring-2"
                       />
-                      <span className="text-sm font-semibold text-white">
+                      <span className="text-sm tracking-wide">
                         {feature}
                       </span>
                     </label>
@@ -569,11 +586,11 @@ const AdminProducts = () => {
                 </div>
                 {formData.feature.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="text-sm text-gray-400">Selected:</span>
+                    <span className="text-sm text-stone-600 font-light">Selected:</span>
                     {formData.feature.map((feat) => (
                       <span
                         key={feat}
-                        className={`px-4 py-2 bg-gradient-to-r ${getFeatureColor(feat)} text-white rounded-xl text-sm font-bold shadow-lg`}
+                        className={`px-4 py-2 ${getFeatureColor(feat)} text-white rounded-sm text-sm font-light tracking-wide shadow-sm`}
                       >
                         {feat}
                       </span>
@@ -584,7 +601,7 @@ const AdminProducts = () => {
 
               {/* Size Options */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Size Options
                 </label>
                 <div className="flex gap-3 mb-3">
@@ -593,13 +610,13 @@ const AdminProducts = () => {
                     value={sizeInput}
                     onChange={(e) => setSizeInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSize())}
-                    className="flex-1 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                    className="flex-1 px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all font-light"
                     placeholder="e.g., S, M, L, XL"
                   />
                   <button
                     type="button"
                     onClick={addSize}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                    className="px-6 py-3 bg-blue-700 text-white rounded-sm hover:bg-blue-800 transition-all font-light tracking-wide"
                   >
                     Add
                   </button>
@@ -608,13 +625,13 @@ const AdminProducts = () => {
                   {formData.sizeOptions.map((size) => (
                     <span
                       key={size}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-xl text-sm font-semibold"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-800 rounded-sm text-sm font-light"
                     >
                       {size}
                       <button
                         type="button"
                         onClick={() => removeSize(size)}
-                        className="hover:text-blue-300 text-lg font-bold"
+                        className="hover:text-blue-600 text-lg font-light"
                       >
                         ×
                       </button>
@@ -625,7 +642,7 @@ const AdminProducts = () => {
 
               {/* Color Options */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Color Options
                 </label>
                 <div className="flex gap-3 mb-3">
@@ -634,13 +651,13 @@ const AdminProducts = () => {
                     value={colorInput}
                     onChange={(e) => setColorInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addColor())}
-                    className="flex-1 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                    className="flex-1 px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-all font-light"
                     placeholder="e.g., Red, Blue, Black"
                   />
                   <button
                     type="button"
                     onClick={addColor}
-                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                    className="px-6 py-3 bg-green-700 text-white rounded-sm hover:bg-green-800 transition-all font-light tracking-wide"
                   >
                     Add
                   </button>
@@ -649,13 +666,13 @@ const AdminProducts = () => {
                   {formData.colorOptions.map((color) => (
                     <span
                       key={color}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl text-sm font-semibold"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 text-green-800 rounded-sm text-sm font-light"
                     >
                       {color}
                       <button
                         type="button"
                         onClick={() => removeColor(color)}
-                        className="hover:text-green-300 text-lg font-bold"
+                        className="hover:text-green-600 text-lg font-light"
                       >
                         ×
                       </button>
@@ -666,7 +683,7 @@ const AdminProducts = () => {
 
               {/* Images */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-sm uppercase tracking-wider text-stone-900 mb-3 font-medium">
                   Product Images {!editingProduct && "*"} (Max 5)
                 </label>
                 <input
@@ -674,7 +691,7 @@ const AdminProducts = () => {
                   accept="image/*"
                   multiple
                   onChange={handleImageChange}
-                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:transition-colors"
+                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-sm text-stone-900 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-light file:tracking-wide file:bg-stone-900 file:text-white hover:file:bg-stone-800 file:transition-colors font-light"
                   required={!editingProduct}
                 />
                 {imagePreviews.length > 0 && (
@@ -684,9 +701,9 @@ const AdminProducts = () => {
                         <img
                           src={preview}
                           alt={`Preview ${index + 1}`}
-                          className="w-full aspect-square object-cover rounded-xl border-2 border-white/10 group-hover:border-purple-500/50 transition-colors"
+                          className="w-full aspect-square object-cover rounded-sm border-2 border-stone-200 group-hover:border-stone-400 transition-colors"
                         />
-                        <div className="absolute top-2 right-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                        <div className="absolute top-2 right-2 bg-stone-900 text-white text-xs px-2 py-1 rounded-sm font-light">
                           {index + 1}
                         </div>
                       </div>
@@ -696,11 +713,11 @@ const AdminProducts = () => {
               </div>
 
               {/* Submit Buttons */}
-              <div className="flex gap-4 pt-6 border-t border-white/10">
+              <div className="flex gap-4 pt-6 border-t border-stone-200">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all font-semibold"
+                  className="flex-1 px-6 py-3 bg-white border border-stone-200 text-stone-900 rounded-sm hover:bg-stone-50 transition-all font-light tracking-wide"
                   disabled={submitting}
                 >
                   Cancel
@@ -708,27 +725,23 @@ const AdminProducts = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="relative flex-1 group overflow-hidden"
+                  className={`flex-1 px-6 py-3 ${editingProduct ? 'bg-blue-700 hover:bg-blue-800' : 'bg-green-700 hover:bg-green-800'} text-white rounded-sm transition-all duration-300 font-light tracking-wide disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
                 >
-                  <div className={`absolute inset-0 ${editingProduct ? 'bg-gradient-to-r from-blue-600 to-cyan-600' : 'bg-gradient-to-r from-green-600 to-emerald-600'} rounded-xl`}></div>
-                  <div className={`absolute inset-0 ${editingProduct ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-green-500 to-emerald-500'} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity`}></div>
-                  <div className="relative px-6 py-3 text-white font-bold flex items-center justify-center gap-2">
-                    {submitting ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        Saving...
-                      </>
-                    ) : (
-                      editingProduct ? "Update Product" : "Create Product"
-                    )}
-                  </div>
+                  {submitting ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Saving...
+                    </>
+                  ) : (
+                    editingProduct ? "Update Product" : "Create Product"
+                  )}
                 </button>
               </div>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
       <Footer />

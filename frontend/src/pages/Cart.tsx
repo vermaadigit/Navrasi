@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
@@ -82,337 +83,360 @@ const Cart = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
       <Header />
 
-      {/* Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl top-20 -left-20 animate-pulse"></div>
-        <div className="absolute w-96 h-96 bg-pink-500/10 rounded-full blur-3xl bottom-20 -right-20 animate-pulse delay-1000"></div>
-      </div>
-
-      <div className="profile-container mx-auto px-4 py-12 max-w-6xl relative z-10">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:pt-28 max-w-7xl">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
-            <h1 className="text-4xl font-bold text-white">Shopping Cart</h1>
-          </div>
-          <p className="text-gray-400 ml-7">Review your items and checkout</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <p className="text-xs uppercase tracking-widest text-amber-700 mb-3 font-medium">
+            Your Cart
+          </p>
+          <h1 className="text-4xl sm:text-5xl font-light text-stone-900 tracking-tight">
+            Shopping Cart
+          </h1>
+          <p className="text-stone-600 font-light mt-2">
+            Review your items and proceed to checkout
+          </p>
+        </motion.div>
 
         {cartItems.length === 0 ? (
-          <div className="bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl border border-white/10 rounded-2xl p-16 text-center shadow-2xl">
-            <div className="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white border border-stone-200 rounded-sm p-16 text-center"
+          >
+            <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center">
               <svg
-                className="w-16 h-16 text-gray-600"
+                className="w-16 h-16 text-stone-300"
                 fill="none"
                 stroke="currentColor"
+                strokeWidth={1}
                 viewBox="0 0 24 24"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-3">
+            <h3 className="text-xl font-light text-stone-900 mb-3">
               Your cart is empty
             </h3>
-            <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              Looks like you haven't added anything to your cart yet. Start shopping to find amazing products!
+            <p className="text-stone-600 mb-8 max-w-md mx-auto font-light">
+              Discover our collection and add your favorite items
             </p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 font-light tracking-wide"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <span>Browse Products</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-              Browse Products
             </Link>
-          </div>
+          </motion.div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-                <div className="p-6 border-b border-white/10 flex items-center justify-between">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="bg-white border border-stone-200 rounded-sm overflow-hidden"
+              >
+                <div className="p-6 border-b border-stone-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-stone-900 rounded-sm flex items-center justify-center text-white font-light text-sm">
                       {cartItems.length}
                     </div>
-                    <h2 className="text-xl font-semibold text-white">
+                    <h2 className="text-lg font-light text-stone-900">
                       Cart Items
                     </h2>
                   </div>
                   <button
                     onClick={clearCart}
-                    className="px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all text-sm font-medium"
+                    className="px-4 py-2 text-sm text-red-700 hover:text-red-900 hover:bg-red-50 rounded-sm transition-all font-light"
                   >
                     Clear Cart
                   </button>
                 </div>
 
-                <div className="divide-y divide-white/10">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="p-6 hover:bg-white/5 transition-colors">
-                      <div className="flex gap-4">
-                        {/* Product Image */}
-                        <Link
-                          to={`/products/${item.productId}`}
-                          className="flex-shrink-0 group"
-                        >
-                          <div className="relative overflow-hidden rounded-xl">
-                            <img
-                              src={item.image || "/placeholder-product.png"}
-                              alt={item.title}
-                              className="w-28 h-28 object-cover group-hover:scale-110 transition-transform duration-300"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/placeholder-product.png";
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          </div>
-                        </Link>
-
-                        {/* Product Details */}
-                        <div className="flex-1 min-w-0">
+                <div className="divide-y divide-stone-200">
+                  <AnimatePresence>
+                    {cartItems.map((item, index) => (
+                      <motion.div 
+                        key={item.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="p-6 hover:bg-stone-50 transition-colors"
+                      >
+                        <div className="flex gap-4">
+                          {/* Product Image */}
                           <Link
                             to={`/products/${item.productId}`}
-                            className="text-lg font-bold text-white hover:text-purple-400 line-clamp-2 transition-colors"
+                            className="flex-shrink-0 group"
                           >
-                            {item.title}
+                            <div className="relative overflow-hidden rounded-sm bg-stone-100">
+                              <img
+                                src={item.image || "/placeholder-product.png"}
+                                alt={item.title}
+                                className="w-28 h-28 object-cover group-hover:scale-105 transition-transform duration-500"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = "https://via.placeholder.com/200?text=NAVRASI";
+                                }}
+                              />
+                            </div>
                           </Link>
 
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {item.size && (
-                              <span className="px-3 py-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-sm text-gray-300">
-                                Size: <span className="font-semibold text-white">{item.size}</span>
-                              </span>
-                            )}
-                            {item.color && (
-                              <span className="px-3 py-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-sm text-gray-300">
-                                Color: <span className="font-semibold text-white">{item.color}</span>
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="flex items-center justify-between mt-4">
-                            {/* Quantity Controls */}
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() =>
-                                  updateQuantity(item.id, item.quantity - 1)
-                                }
-                                className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 hover:border-purple-500/50 transition-all flex items-center justify-center text-white font-bold"
-                              >
-                                -
-                              </button>
-                              <span className="w-16 text-center font-bold text-white text-lg">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  updateQuantity(item.id, item.quantity + 1)
-                                }
-                                disabled={item.quantity >= item.stock}
-                                className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 hover:border-purple-500/50 transition-all flex items-center justify-center text-white font-bold disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                +
-                              </button>
-                            </div>
-
-                            {/* Price */}
-                            <div className="text-right">
-                              <p className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                ₹{(item.price * item.quantity).toFixed(2)}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                ₹{item.price} each
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Stock Warning & Remove Button */}
-                          <div className="flex items-center justify-between mt-4">
-                            {item.quantity >= item.stock && (
-                              <span className="text-xs text-yellow-400 flex items-center gap-1">
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                                Max stock reached
-                              </span>
-                            )}
-                            <button
-                              onClick={() => removeItem(item.id)}
-                              className="ml-auto flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 font-medium hover:bg-red-500/10 rounded-lg transition-all"
+                          {/* Product Details */}
+                          <div className="flex-1 min-w-0">
+                            <Link
+                              to={`/products/${item.productId}`}
+                              className="text-base font-light text-stone-900 hover:text-amber-800 line-clamp-2 transition-colors"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                              Remove
-                            </button>
+                              {item.title}
+                            </Link>
+
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {item.size && (
+                                <span className="px-3 py-1 bg-stone-100 border border-stone-200 rounded-sm text-xs text-stone-600 font-light">
+                                  Size: <span className="font-normal text-stone-900">{item.size}</span>
+                                </span>
+                              )}
+                              {item.color && (
+                                <span className="px-3 py-1 bg-stone-100 border border-stone-200 rounded-sm text-xs text-stone-600 font-light">
+                                  Color: <span className="font-normal text-stone-900">{item.color}</span>
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between mt-4">
+                              {/* Quantity Controls */}
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() =>
+                                    updateQuantity(item.id, item.quantity - 1)
+                                  }
+                                  className="w-10 h-10 bg-stone-100 border border-stone-200 rounded-sm hover:bg-stone-200 transition-all flex items-center justify-center text-stone-900 font-light"
+                                >
+                                  −
+                                </button>
+                                <span className="w-12 text-center font-light text-stone-900">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    updateQuantity(item.id, item.quantity + 1)
+                                  }
+                                  disabled={item.quantity >= item.stock}
+                                  className="w-10 h-10 bg-stone-100 border border-stone-200 rounded-sm hover:bg-stone-200 transition-all flex items-center justify-center text-stone-900 font-light disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  +
+                                </button>
+                              </div>
+
+                              {/* Price */}
+                              <div className="text-right">
+                                <p className="text-lg font-light text-stone-900">
+                                  ₹{(item.price * item.quantity).toLocaleString()}
+                                </p>
+                                <p className="text-xs text-stone-500 font-light">
+                                  ₹{item.price.toLocaleString()} each
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Stock Warning & Remove Button */}
+                            <div className="flex items-center justify-between mt-4">
+                              {item.quantity >= item.stock && (
+                                <span className="text-xs text-amber-700 flex items-center gap-1 font-light">
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  </svg>
+                                  Max stock reached
+                                </span>
+                              )}
+                              <button
+                                onClick={() => removeItem(item.id)}
+                                className="ml-auto flex items-center gap-2 px-4 py-2 text-xs text-red-700 hover:text-red-900 font-light hover:bg-red-50 rounded-sm transition-all uppercase tracking-wider"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                                Remove
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
-              </div>
+              </motion.div>
 
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white rounded-xl hover:bg-white/10 hover:border-purple-500/50 transition-all font-medium"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-sm hover:border-stone-300 hover:bg-stone-50 transition-all font-light"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
+                  strokeWidth={1.5}
                   viewBox="0 0 24 24"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-                Continue Shopping
+                <span>Continue Shopping</span>
               </Link>
             </div>
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sticky top-24 shadow-2xl">
-                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                  <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="bg-white border border-stone-200 rounded-sm p-6 sticky top-28"
+              >
+                <h2 className="text-lg font-light text-stone-900 mb-6 uppercase tracking-wider text-xs">
                   Order Summary
                 </h2>
 
                 <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-gray-400">
+                  <div className="flex justify-between text-stone-600 font-light">
                     <span>Subtotal ({cartItems.length} items)</span>
-                    <span className="text-white font-semibold">₹{subtotal.toFixed(2)}</span>
+                    <span className="text-stone-900">₹{subtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-gray-400">
+                  <div className="flex justify-between text-stone-600 font-light">
                     <span>Shipping</span>
-                    <span className="text-green-400 font-bold flex items-center gap-1">
+                    <span className="text-green-700 font-normal flex items-center gap-1">
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       FREE
                     </span>
                   </div>
-                  <div className="border-t border-white/10 pt-4 flex justify-between text-lg">
-                    <span className="text-white font-semibold">Total</span>
-                    <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      ₹{total.toFixed(2)}
+                  <div className="border-t border-stone-200 pt-4 flex justify-between">
+                    <span className="text-stone-900 font-light">Total</span>
+                    <span className="text-2xl font-light text-stone-900">
+                      ₹{total.toLocaleString()}
                     </span>
                   </div>
                 </div>
 
                 <button
                   onClick={handleCheckout}
-                  className="relative w-full group overflow-hidden mb-3"
+                  className="w-full px-6 py-4 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 mb-3 font-light tracking-wide flex items-center justify-center gap-2"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative px-6 py-4 text-white font-bold flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    {isAuthenticated ? "Proceed to Checkout" : "Login to Checkout"}
-                  </div>
-                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl blur-xl"></div>
+                  <span>{isAuthenticated ? "Proceed to Checkout" : "Login to Checkout"}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
                 </button>
 
                 {!isAuthenticated && (
-                  <p className="text-xs text-center text-gray-500 mb-6">
+                  <p className="text-xs text-center text-stone-500 mb-6 font-light">
                     You'll be redirected to login before checkout
                   </p>
                 )}
 
-                <div className="pt-6 border-t border-white/10 space-y-3">
+                <div className="pt-6 border-t border-stone-200 space-y-3">
                   <div className="flex items-start gap-3 text-sm">
-                    <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-5 h-5 text-green-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
+                        className="w-4 h-4 text-stone-700"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
                       >
                         <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
                         />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-white font-semibold">Free Shipping</p>
-                      <p className="text-gray-400 text-xs">On all orders nationwide</p>
+                      <p className="text-stone-900 font-light">Free Shipping</p>
+                      <p className="text-stone-500 text-xs font-light">On all orders nationwide</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 text-sm">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-5 h-5 text-blue-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
+                        className="w-4 h-4 text-stone-700"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
                       >
                         <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
                         />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-white font-semibold">Secure Checkout</p>
-                      <p className="text-gray-400 text-xs">SSL encrypted payment</p>
+                      <p className="text-stone-900 font-light">Secure Checkout</p>
+                      <p className="text-stone-500 text-xs font-light">SSL encrypted payment</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 text-sm">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-5 h-5 text-purple-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
+                        className="w-4 h-4 text-stone-700"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
                       >
                         <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
                         />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-white font-semibold">Easy Returns</p>
-                      <p className="text-gray-400 text-xs">Within 30 days</p>
+                      <p className="text-stone-900 font-light">Easy Returns</p>
+                      <p className="text-stone-500 text-xs font-light">Within 30 days</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Methods */}
-                <div className="mt-6 pt-6 border-t border-white/10">
-                  <p className="text-xs text-gray-400 mb-3">We Accept</p>
-                  <div className="flex gap-2">
-                    {["Visa", "Mastercard", "UPI", "PayPal"].map((method) => (
+                <div className="mt-6 pt-6 border-t border-stone-200">
+                  <p className="text-xs uppercase tracking-wider text-stone-500 mb-3 font-medium">We Accept</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {["Visa", "MC", "UPI", "PayPal"].map((method) => (
                       <div
                         key={method}
-                        className="flex-1 px-2 py-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-center"
+                        className="px-2 py-2 bg-stone-50 border border-stone-200 rounded-sm text-center"
                       >
-                        <span className="text-xs text-gray-400 font-medium">{method}</span>
+                        <span className="text-xs text-stone-600 font-light">{method}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         )}

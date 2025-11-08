@@ -1,6 +1,7 @@
 import { useState, FormEvent, ChangeEvent, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios, { AxiosError } from "../utils/axios";
+import { motion } from "framer-motion";
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
@@ -31,7 +32,7 @@ const Profile = () => {
       .toUpperCase()
       .substring(0, 2);
     
-    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%238B5CF6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23EC4899;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='200' height='200' fill='url(%23grad)'/%3E%3Ctext x='100' y='100' font-family='Arial, sans-serif' font-size='80' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'%3E${initials}%3C/text%3E%3C/svg%3E`;
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23d97706;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23b45309;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='200' height='200' fill='url(%23grad)'/%3E%3Ctext x='100' y='100' font-family='Arial, sans-serif' font-size='80' font-weight='300' fill='white' text-anchor='middle' dominant-baseline='central'%3E${initials}%3C/text%3E%3C/svg%3E`;
   };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -116,33 +117,45 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
       <Header />
-      
-      {/* Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl top-20 -left-20 animate-pulse"></div>
-        <div className="absolute w-96 h-96 bg-pink-500/10 rounded-full blur-3xl bottom-20 -right-20 animate-pulse delay-1000"></div>
-      </div>
 
-      <div className="profile-container mx-auto px-4 py-12 max-w-3xl relative z-10">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:pt-28 max-w-3xl">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
-            <h1 className="text-4xl font-bold text-white">My Profile</h1>
-          </div>
-          <p className="text-gray-400 ml-7">Manage your account settings and preferences</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <p className="text-xs uppercase tracking-widest text-amber-700 mb-3 font-medium">
+            Account Settings
+          </p>
+          <h1 className="text-4xl sm:text-5xl font-light text-stone-900 tracking-tight">
+            My Profile
+          </h1>
+          <p className="text-stone-600 font-light mt-2">
+            Manage your account information and preferences
+          </p>
+        </motion.div>
 
-        <div className="bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="bg-white border border-stone-200 rounded-sm p-8 md:p-12"
+        >
           {/* Success Message */}
           {success && (
-            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-green-50 border border-green-200 rounded-sm"
+            >
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-green-100 rounded-sm flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-5 h-5 text-green-400"
+                    className="w-5 h-5 text-green-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -154,19 +167,23 @@ const Profile = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-green-400">{success}</p>
+                  <p className="text-sm font-light text-green-800">{success}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-sm"
+            >
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-red-100 rounded-sm flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-5 h-5 text-red-400"
+                    className="w-5 h-5 text-red-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -178,34 +195,31 @@ const Profile = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-red-400">{error}</p>
+                  <p className="text-sm font-light text-red-800">{error}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Avatar Upload */}
             <div>
-              <label className="block text-sm font-semibold text-white mb-6">
+              <label className="block text-xs uppercase tracking-wider text-stone-700 mb-6 font-medium">
                 Profile Picture
               </label>
               <div className="flex flex-col sm:flex-row items-center gap-8">
                 <div className="relative group">
-                  {/* Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                  
                   {/* Avatar Image */}
                   <img
                     src={getAvatarSrc()}
                     alt="Profile"
-                    className="relative w-32 h-32 rounded-full object-cover border-4 border-white/20 shadow-2xl"
+                    className="w-32 h-32 rounded-full object-cover border-2 border-stone-200 shadow-lg"
                     onError={handleImageError}
                   />
                   
                   {/* Success Badge */}
                   {avatarFile && (
-                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center border-4 border-gray-900 shadow-lg">
+                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                       <svg
                         className="w-5 h-5 text-white"
                         fill="currentColor"
@@ -224,11 +238,11 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={triggerFileInput}
-                    className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute inset-0 bg-stone-900/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
                     </svg>
                   </button>
                 </div>
@@ -237,7 +251,7 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={triggerFileInput}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-purple-500/50 transition-all mb-3"
+                    className="px-6 py-3 bg-stone-900 text-white rounded-sm font-light tracking-wide hover:bg-stone-800 transition-all mb-3"
                   >
                     Change Picture
                   </button>
@@ -248,13 +262,13 @@ const Profile = () => {
                     onChange={handleAvatarChange}
                     className="hidden"
                   />
-                  <p className="text-xs text-gray-400 mb-2">
+                  <p className="text-xs text-stone-500 mb-2 font-light">
                     JPG, PNG or GIF (Max 5MB)
                   </p>
                   {avatarFile && (
                     <div className="flex items-center gap-2 justify-center sm:justify-start">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <p className="text-xs text-green-400 font-medium">
+                      <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                      <p className="text-xs text-green-700 font-light">
                         New image selected
                       </p>
                     </div>
@@ -267,28 +281,25 @@ const Profile = () => {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-semibold text-white mb-3"
+                className="block text-xs uppercase tracking-wider text-stone-700 mb-3 font-medium"
               >
                 Full Name
               </label>
-              <div className="relative group">
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={handleNameChange}
-                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all"
-                  required
-                />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
-              </div>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={handleNameChange}
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-300 focus:bg-white transition-all font-light"
+                required
+              />
             </div>
 
             {/* Email (Read-only) */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-white mb-3"
+                className="block text-xs uppercase tracking-wider text-stone-700 mb-3 font-medium"
               >
                 Email Address
               </label>
@@ -297,11 +308,11 @@ const Profile = () => {
                 id="email"
                 value={user?.email || ""}
                 disabled
-                className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-gray-500 cursor-not-allowed"
+                className="w-full px-4 py-3 bg-stone-100 border border-stone-200 rounded-sm text-stone-500 cursor-not-allowed font-light"
               />
-              <p className="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <p className="text-xs text-stone-500 mt-2 flex items-center gap-2 font-light">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                 </svg>
                 Email cannot be changed
               </p>
@@ -311,10 +322,10 @@ const Profile = () => {
             <div className="grid md:grid-cols-2 gap-6">
               {/* Auth Provider */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-xs uppercase tracking-wider text-stone-700 mb-3 font-medium">
                   Account Type
                 </label>
-                <div className="flex items-center gap-3 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
+                <div className="flex items-center gap-3 px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm">
                   {user?.authProvider === "google" ? (
                     <>
                       <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -335,26 +346,26 @@ const Profile = () => {
                           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                         />
                       </svg>
-                      <span className="text-white font-medium">Google Account</span>
+                      <span className="text-stone-900 font-light">Google Account</span>
                     </>
                   ) : (
                     <>
-                      <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                      <div className="w-6 h-6 bg-stone-200 rounded-sm flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-blue-400"
+                          className="w-4 h-4 text-stone-600"
                           fill="none"
                           stroke="currentColor"
+                          strokeWidth={1.5}
                           viewBox="0 0 24 24"
                         >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
                           />
                         </svg>
                       </div>
-                      <span className="text-white font-medium">Email & Password</span>
+                      <span className="text-stone-900 font-light">Email & Password</span>
                     </>
                   )}
                 </div>
@@ -362,21 +373,21 @@ const Profile = () => {
 
               {/* Role Badge */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
+                <label className="block text-xs uppercase tracking-wider text-stone-700 mb-3 font-medium">
                   Role
                 </label>
-                <div className="px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
+                <div className="px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm">
                   <span
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold ${
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-light ${
                       user?.role === "admin"
-                        ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30"
-                        : "bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-300 border border-blue-500/30"
+                        ? "bg-amber-100 text-amber-900"
+                        : "bg-stone-200 text-stone-900"
                     }`}
                   >
                     <span className={`w-2 h-2 rounded-full ${
-                      user?.role === "admin" ? "bg-purple-400" : "bg-blue-400"
+                      user?.role === "admin" ? "bg-amber-600" : "bg-stone-600"
                     }`}></span>
-                    {user?.role === "admin" ? "Administrator" : "Customer"}
+                    {user?.role === "admin" ? "Administrator" : "Member"}
                   </span>
                 </div>
               </div>
@@ -386,72 +397,67 @@ const Profile = () => {
             <button
               type="submit"
               disabled={loading}
-              className="relative w-full group overflow-hidden"
+              className="w-full px-6 py-4 bg-stone-900 text-white rounded-sm font-light tracking-wide hover:bg-stone-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative px-6 py-4 text-white font-semibold flex items-center justify-center gap-2">
-                {loading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span>Updating Profile...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Save Changes</span>
-                  </>
-                )}
-              </div>
-              {!loading && (
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl blur-xl"></div>
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span>Updating Profile...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  <span>Save Changes</span>
+                </>
               )}
             </button>
           </form>
 
           {/* Account Stats */}
-          <div className="mt-8 pt-8 border-t border-white/10">
-            <h3 className="text-sm font-semibold text-white mb-4">Account Information</h3>
+          <div className="mt-8 pt-8 border-t border-stone-200">
+            <h3 className="text-xs uppercase tracking-wider text-stone-700 mb-4 font-medium">
+              Account Information
+            </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
-                <p className="text-xs text-gray-400 mb-1">Member Since</p>
-                <p className="text-sm font-semibold text-white">
+              <div className="px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm">
+                <p className="text-xs text-stone-500 mb-1 font-light">Member Since</p>
+                <p className="text-sm font-light text-stone-900">
                   {new Date(user?.createdAt || Date.now()).toLocaleDateString('en-US', { 
                     month: 'short', 
                     year: 'numeric' 
                   })}
                 </p>
               </div>
-              <div className="px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
-                <p className="text-xs text-gray-400 mb-1">Account Status</p>
+              <div className="px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm">
+                <p className="text-xs text-stone-500 mb-1 font-light">Account Status</p>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  <p className="text-sm font-semibold text-green-400">Active</p>
+                  <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                  <p className="text-sm font-light text-green-700">Active</p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
       <Footer />
     </div>

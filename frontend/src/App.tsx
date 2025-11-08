@@ -3,6 +3,11 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -13,6 +18,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
+import OrderDetail from "./pages/OrderDetail";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOrders from "./pages/admin/Orders";
@@ -24,6 +30,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ReturnPolicy from "./pages/ReturnPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import Disclaimer from "./pages/Disclaimer";
+import TermCondition from "./pages/termCondition"
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 
@@ -46,6 +53,7 @@ function App() {
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<TermCondition />} />
           <Route path="/contact" element={<Contact />} />
 
           <Route path="/products/feature/:feature" element={<FeatureProducts />} />
@@ -55,6 +63,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/my-orders" element={<MyOrders />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
           </Route>
 
           {/* Admin Routes */}

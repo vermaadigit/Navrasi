@@ -2,6 +2,7 @@ import { useState, FormEvent, ChangeEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios, { AxiosError } from "../utils/axios";
+import { motion } from "framer-motion";
 
 interface LocationState {
   from?: {
@@ -72,21 +73,33 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-stone-50 via-white to-stone-50 px-4 py-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-md w-full"
+      >
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white border border-stone-200 rounded-sm shadow-sm p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <p className="text-xs uppercase tracking-widest text-amber-700 mb-3 font-medium">
               Welcome Back
+            </p>
+            <h2 className="text-3xl font-light text-stone-900 mb-2 tracking-tight">
+              Sign In
             </h2>
-            <p className="text-gray-600">Sign in to continue shopping</p>
+            <p className="text-stone-600 font-light">Continue to your account</p>
           </div>
 
           {/* Error Alert */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-sm"
+            >
               <div className="flex items-start">
                 <svg
                   className="w-5 h-5 text-red-600 mt-0.5"
@@ -99,9 +112,9 @@ const Login = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="ml-3 text-sm text-red-800">{error}</p>
+                <p className="ml-3 text-sm text-red-800 font-light">{error}</p>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Form */}
@@ -110,7 +123,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-xs uppercase tracking-wider text-stone-700 mb-2 font-medium"
               >
                 Email Address
               </label>
@@ -120,7 +133,7 @@ const Login = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm focus:outline-none focus:border-stone-300 focus:bg-white transition-all font-light"
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
@@ -131,7 +144,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-xs uppercase tracking-wider text-stone-700 mb-2 font-medium"
               >
                 Password
               </label>
@@ -142,7 +155,7 @@ const Login = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm focus:outline-none focus:border-stone-300 focus:bg-white transition-all pr-12 font-light"
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
@@ -150,26 +163,25 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
                 >
                   {showPassword ? (
                     <svg
                       className="w-5 h-5"
                       fill="none"
                       stroke="currentColor"
+                      strokeWidth={1.5}
                       viewBox="0 0 24 24"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
                       />
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                       />
                     </svg>
                   ) : (
@@ -177,13 +189,13 @@ const Login = () => {
                       className="w-5 h-5"
                       fill="none"
                       stroke="currentColor"
+                      strokeWidth={1.5}
                       viewBox="0 0 24 24"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
                       />
                     </svg>
                   )}
@@ -195,7 +207,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-stone-900 text-white py-3 px-4 rounded-sm font-light tracking-wide hover:bg-stone-800 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -229,10 +241,10 @@ const Login = () => {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+              <div className="w-full border-t border-stone-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
+              <span className="px-2 bg-white text-stone-500 font-light">
                 Or continue with
               </span>
             </div>
@@ -242,7 +254,7 @@ const Login = () => {
           <button
             onClick={handleGoogleLogin}
             type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-700"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors font-light text-stone-700"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -267,26 +279,31 @@ const Login = () => {
 
           {/* Footer Links */}
           <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-stone-600 font-light">
               Don't have an account?{" "}
               <Link
                 to="/register"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-stone-900 hover:text-amber-800 font-normal"
               >
                 Sign up
               </Link>
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-stone-600 font-light">
               <Link
                 to="/admin/login"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-stone-900 hover:text-amber-800 font-normal"
               >
                 Admin Login
               </Link>
             </p>
           </div>
         </div>
-      </div>
+
+        {/* Additional Info */}
+        <p className="mt-6 text-center text-xs text-stone-500 font-light">
+          Secure login protected by industry-standard encryption
+        </p>
+      </motion.div>
     </div>
   );
 };
