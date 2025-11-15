@@ -2,68 +2,88 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-
-interface CartItem {
-  id: string;
-  productId: string;
-  title: string;
-  price: number;
-  quantity: number;
-  size?: string;
-  color?: string;
-  image: string;
-  stock: number;
-}
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
+import {
+  getCart,
+  updateCartItem,
+  removeFromCart,
+  clearCart as clearCartAPI,
+  CartItem,
+} from "../utils/cartApi";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadCart();
-  }, []);
+    if (isAuthenticated) {
+      loadCart();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated]);
 
-  const loadCart = () => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      try {
-        const parsedCart: CartItem[] = JSON.parse(storedCart);
-        setCartItems(parsedCart);
-      } catch (error) {
-        console.error("Failed to parse cart:", error);
-        setCartItems([]);
-      }
+  const loadCart = async () => {
+    try {
+      setLoading(true);
+      const items = await getCart();
+      setCartItems(items);
+    } catch (error) {
+      console.error("Failed to load cart:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
+  const handleUpdateQuantity = async (item: CartItem, newQuantity: number) => {
     if (newQuantity < 1) return;
 
-    const updatedCart = cartItems.map((item) => {
-      if (item.id === itemId) {
-        const quantity = Math.min(newQuantity, item.stock);
-        return { ...item, quantity };
-      }
-      return item;
-    });
+    try {
+      // Optimistically update UI
+      const optimisticItems = cartItems.map((cartItem) =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity: newQuantity }
+          : cartItem
+      );
+      setCartItems(optimisticItems);
 
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+      // Update in backend
+      const items = await updateCartItem(
+        item.productId,
+        newQuantity,
+        item.size,
+        item.color
+      );
+      
+      // Set the response from backend
+      setCartItems(items);
+    } catch (err: any) {
+      // Revert on error
+      await loadCart();
+      alert(err.message || "Failed to update quantity");
+    }
   };
 
-  const removeItem = (itemId: string) => {
-    const updatedCart = cartItems.filter((item) => item.id !== itemId);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  const handleRemoveItem = async (productId: string) => {
+    try {
+      const items = await removeFromCart(productId);
+      setCartItems(items);
+    } catch (err: any) {
+      alert(err.message || "Failed to remove item");
+    }
   };
 
-  const clearCart = () => {
+  const handleClearCart = async () => {
     if (confirm("Are you sure you want to clear your cart?")) {
-      setCartItems([]);
-      localStorage.removeItem("cart");
+      try {
+        await clearCartAPI();
+        setCartItems([]);
+      } catch (err: any) {
+        alert(err.message || "Failed to clear cart");
+      }
     }
   };
 
@@ -82,13 +102,69 @@ const Cart = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
+        <Header />
+        <div className="flex items-center justify-center py-32">
+          <div className="w-12 h-12 border-2 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, show login prompt
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:pt-28">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white border border-stone-200 rounded-sm p-16 text-center"
+          >
+            <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <svg
+                className="w-16 h-16 text-stone-300"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-light text-stone-900 mb-3">
+              Please log in to view your cart
+            </h3>
+            <p className="text-stone-600 mb-8 max-w-md mx-auto font-light">
+              Sign in to access your saved items and continue shopping
+            </p>
+            <Link
+              to="/login"
+              state={{ from: "/cart" }}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 font-light tracking-wide"
+            >
+              <span>Sign In</span>
+            </Link>
+          </motion.div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
       <Header />
-
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:pt-28 max-w-7xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:pt-28">
         {/* Page Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -106,7 +182,7 @@ const Cart = () => {
         </motion.div>
 
         {cartItems.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="bg-white border border-stone-200 rounded-sm p-16 text-center"
@@ -116,7 +192,7 @@ const Cart = () => {
                 className="w-16 h-16 text-stone-300"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth={1}
+                strokeWidth="1"
                 viewBox="0 0 24 24"
               >
                 <path
@@ -137,8 +213,18 @@ const Cart = () => {
               className="inline-flex items-center gap-2 px-8 py-4 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 font-light tracking-wide"
             >
               <span>Browse Products</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </Link>
           </motion.div>
@@ -146,7 +232,7 @@ const Cart = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -162,7 +248,7 @@ const Cart = () => {
                     </h2>
                   </div>
                   <button
-                    onClick={clearCart}
+                    onClick={handleClearCart}
                     className="px-4 py-2 text-sm text-red-700 hover:text-red-900 hover:bg-red-50 rounded-sm transition-all font-light"
                   >
                     Clear Cart
@@ -172,7 +258,7 @@ const Cart = () => {
                 <div className="divide-y divide-stone-200">
                   <AnimatePresence>
                     {cartItems.map((item, index) => (
-                      <motion.div 
+                      <motion.div
                         key={item.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -188,12 +274,13 @@ const Cart = () => {
                           >
                             <div className="relative overflow-hidden rounded-sm bg-stone-100">
                               <img
-                                src={item.image || "/placeholder-product.png"}
+                                src={item.image || "placeholder-product.png"}
                                 alt={item.title}
                                 className="w-28 h-28 object-cover group-hover:scale-105 transition-transform duration-500"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
-                                  target.src = "https://via.placeholder.com/200?text=NAVRASI";
+                                  target.src =
+                                    "https://via.placeholder.com/200?text=NAVRASI";
                                 }}
                               />
                             </div>
@@ -207,16 +294,21 @@ const Cart = () => {
                             >
                               {item.title}
                             </Link>
-
                             <div className="flex flex-wrap gap-2 mt-3">
                               {item.size && (
                                 <span className="px-3 py-1 bg-stone-100 border border-stone-200 rounded-sm text-xs text-stone-600 font-light">
-                                  Size: <span className="font-normal text-stone-900">{item.size}</span>
+                                  Size:{" "}
+                                  <span className="font-normal text-stone-900">
+                                    {item.size}
+                                  </span>
                                 </span>
                               )}
                               {item.color && (
                                 <span className="px-3 py-1 bg-stone-100 border border-stone-200 rounded-sm text-xs text-stone-600 font-light">
-                                  Color: <span className="font-normal text-stone-900">{item.color}</span>
+                                  Color:{" "}
+                                  <span className="font-normal text-stone-900">
+                                    {item.color}
+                                  </span>
                                 </span>
                               )}
                             </div>
@@ -226,9 +318,10 @@ const Cart = () => {
                               <div className="flex items-center gap-3">
                                 <button
                                   onClick={() =>
-                                    updateQuantity(item.id, item.quantity - 1)
+                                    handleUpdateQuantity(item, item.quantity - 1)
                                   }
-                                  className="w-10 h-10 bg-stone-100 border border-stone-200 rounded-sm hover:bg-stone-200 transition-all flex items-center justify-center text-stone-900 font-light"
+                                  disabled={item.quantity <= 1}
+                                  className="w-10 h-10 bg-stone-100 border border-stone-200 rounded-sm hover:bg-stone-200 transition-all flex items-center justify-center text-stone-900 font-light disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                   −
                                 </button>
@@ -237,7 +330,7 @@ const Cart = () => {
                                 </span>
                                 <button
                                   onClick={() =>
-                                    updateQuantity(item.id, item.quantity + 1)
+                                    handleUpdateQuantity(item, item.quantity + 1)
                                   }
                                   disabled={item.quantity >= item.stock}
                                   className="w-10 h-10 bg-stone-100 border border-stone-200 rounded-sm hover:bg-stone-200 transition-all flex items-center justify-center text-stone-900 font-light disabled:opacity-30 disabled:cursor-not-allowed"
@@ -249,7 +342,10 @@ const Cart = () => {
                               {/* Price */}
                               <div className="text-right">
                                 <p className="text-lg font-light text-stone-900">
-                                  ₹{(item.price * item.quantity).toLocaleString()}
+                                  ₹
+                                  {(
+                                    item.price * item.quantity
+                                  ).toLocaleString()}
                                 </p>
                                 <p className="text-xs text-stone-500 font-light">
                                   ₹{item.price.toLocaleString()} each
@@ -261,18 +357,36 @@ const Cart = () => {
                             <div className="flex items-center justify-between mt-4">
                               {item.quantity >= item.stock && (
                                 <span className="text-xs text-amber-700 flex items-center gap-1 font-light">
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
                                   </svg>
                                   Max stock reached
                                 </span>
                               )}
                               <button
-                                onClick={() => removeItem(item.id)}
+                                onClick={() => handleRemoveItem(item.productId)}
                                 className="ml-auto flex items-center gap-2 px-4 py-2 text-xs text-red-700 hover:text-red-900 font-light hover:bg-red-50 rounded-sm transition-all uppercase tracking-wider"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                  />
                                 </svg>
                                 Remove
                               </button>
@@ -285,30 +399,32 @@ const Cart = () => {
                 </div>
               </motion.div>
 
-              <Link
-                to="/products"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-sm hover:border-stone-300 hover:bg-stone-50 transition-all font-light"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  viewBox="0 0 24 24"
+              <div>
+                <Link
+                  to="/products"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-700 rounded-sm hover:border-stone-300 hover:bg-stone-50 transition-all font-light"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                <span>Continue Shopping</span>
-              </Link>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  <span>Continue Shopping</span>
+                </Link>
+              </div>
             </div>
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -321,13 +437,23 @@ const Cart = () => {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-stone-600 font-light">
                     <span>Subtotal ({cartItems.length} items)</span>
-                    <span className="text-stone-900">₹{subtotal.toLocaleString()}</span>
+                    <span className="text-stone-900">
+                      ₹{subtotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-stone-600 font-light">
                     <span>Shipping</span>
                     <span className="text-green-700 font-normal flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       FREE
                     </span>
@@ -344,44 +470,28 @@ const Cart = () => {
                   onClick={handleCheckout}
                   className="w-full px-6 py-4 bg-stone-900 text-white rounded-sm hover:bg-stone-800 transition-all duration-300 mb-3 font-light tracking-wide flex items-center justify-center gap-2"
                 >
-                  <span>{isAuthenticated ? "Proceed to Checkout" : "Login to Checkout"}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  <span>Proceed to Checkout</span>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
                   </svg>
                 </button>
 
-                {!isAuthenticated && (
-                  <p className="text-xs text-center text-stone-500 mb-6 font-light">
-                    You'll be redirected to login before checkout
-                  </p>
-                )}
-
-                <div className="pt-6 border-t border-stone-200 space-y-3">
+                {/* Features */}
+                <div className="pt-6 border-t border-stone-200 space-y-4">
                   <div className="flex items-start gap-3 text-sm">
-                    <div className="w-8 h-8 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-4 h-4 text-stone-700"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={1.5}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-stone-900 font-light">Free Shipping</p>
-                      <p className="text-stone-500 text-xs font-light">On all orders nationwide</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 text-sm">
-                    <div className="w-8 h-8 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-4 h-4 text-stone-700"
+                        className="w-5 h-5 text-stone-700"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={1.5}
@@ -395,14 +505,45 @@ const Cart = () => {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-stone-900 font-light">Secure Checkout</p>
-                      <p className="text-stone-500 text-xs font-light">SSL encrypted payment</p>
+                      <p className="text-stone-900 font-light mb-1">
+                        Secure Checkout
+                      </p>
+                      <p className="text-stone-500 text-xs font-light">
+                        Your payment info is safe
+                      </p>
                     </div>
                   </div>
+
                   <div className="flex items-start gap-3 text-sm">
-                    <div className="w-8 h-8 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-4 h-4 text-stone-700"
+                        className="w-5 h-5 text-stone-700"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-stone-900 font-light mb-1">
+                        Free Shipping
+                      </p>
+                      <p className="text-stone-500 text-xs font-light">
+                        On all orders
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 text-sm">
+                    <div className="w-10 h-10 bg-stone-100 rounded-sm flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-5 h-5 text-stone-700"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={1.5}
@@ -416,24 +557,70 @@ const Cart = () => {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-stone-900 font-light">Easy Returns</p>
-                      <p className="text-stone-500 text-xs font-light">Within 30 days</p>
+                      <p className="text-stone-900 font-light mb-1">
+                        Easy Returns
+                      </p>
+                      <p className="text-stone-500 text-xs font-light">
+                        30-day return policy
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Methods */}
                 <div className="mt-6 pt-6 border-t border-stone-200">
-                  <p className="text-xs uppercase tracking-wider text-stone-500 mb-3 font-medium">We Accept</p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {["Visa", "MC", "UPI", "PayPal"].map((method) => (
-                      <div
-                        key={method}
-                        className="px-2 py-2 bg-stone-50 border border-stone-200 rounded-sm text-center"
-                      >
-                        <span className="text-xs text-stone-600 font-light">{method}</span>
-                      </div>
-                    ))}
+                  <p className="text-xs text-stone-500 mb-3 font-light uppercase tracking-wider">
+                    We Accept
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    <div className="w-12 h-8 bg-stone-100 border border-stone-200 rounded flex items-center justify-center">
+                      <svg className="w-6 h-6 text-stone-600" viewBox="0 0 24 24">
+                        <text
+                          x="50%"
+                          y="50%"
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          fontSize="8"
+                          fontWeight="bold"
+                        >
+                          VISA
+                        </text>
+                      </svg>
+                    </div>
+                    <div className="w-12 h-8 bg-stone-100 border border-stone-200 rounded flex items-center justify-center">
+                      <svg className="w-6 h-6 text-stone-600" viewBox="0 0 24 24">
+                        <circle cx="9" cy="12" r="5" fill="red" opacity="0.7" />
+                        <circle cx="15" cy="12" r="5" fill="orange" opacity="0.7" />
+                      </svg>
+                    </div>
+                    <div className="w-12 h-8 bg-stone-100 border border-stone-200 rounded flex items-center justify-center">
+                      <svg className="w-6 h-6 text-stone-600" viewBox="0 0 24 24">
+                        <text
+                          x="50%"
+                          y="50%"
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          fontSize="7"
+                          fontWeight="bold"
+                        >
+                          UPI
+                        </text>
+                      </svg>
+                    </div>
+                    <div className="w-12 h-8 bg-stone-100 border border-stone-200 rounded flex items-center justify-center">
+                      <svg className="w-6 h-6 text-stone-600" viewBox="0 0 24 24">
+                        <text
+                          x="50%"
+                          y="50%"
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          fontSize="8"
+                          fontWeight="bold"
+                        >
+                          COD
+                        </text>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </motion.div>

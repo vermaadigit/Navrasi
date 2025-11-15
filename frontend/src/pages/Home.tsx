@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios, { AxiosError } from "../utils/axios";
+import { Link } from "react-router-dom";
+import axios from "../utils/axios";
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { motion } from 'framer-motion';
@@ -22,7 +22,6 @@ const Home = () => {
   const [newCollection, setNewCollection] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     checkAuth();
@@ -99,7 +98,7 @@ const Home = () => {
       <Header />
 
       {/* Hero Section - Premium Minimal */}
-      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-20">
+      <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden pt-20">
         {/* Subtle gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-stone-100/40 via-white to-amber-50/30"></div>
         
@@ -391,13 +390,13 @@ const Home = () => {
             >
               <div className="relative aspect-[4/5] bg-stone-200 overflow-hidden">
                 <img
-                  src="/placeholder-editorial.png"
+                  src="/home_card_img.jpeg"
                   alt="Editorial"
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://via.placeholder.com/800x1000?text=NAVRASI+COLLECTION";
-                  }}
+                  // onError={(e) => {
+                  //   const target = e.target as HTMLImageElement;
+                  //   target.src = "https://via.placeholder.com/800x1000?text=NAVRASI+COLLECTION";
+                  // }}
                 />
                 {/* Decorative frame */}
                 <div className="absolute inset-4 border border-white/40"></div>
