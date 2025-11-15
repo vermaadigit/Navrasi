@@ -5,17 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-
-interface CartItem {
-  id: string;
-  productId?: string;
-  title: string;
-  price: number;
-  quantity: number;
-  size?: string;
-  color?: string;
-  image?: string;
-}
+import { getCart, clearCart as clearCartAPI, CartItem } from "../utils/cartApi";
 
 interface ShippingAddress {
   name: string;
@@ -43,6 +33,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
+  const [cartLoading, setCartLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
@@ -63,23 +54,26 @@ const Checkout = () => {
       return;
     }
 
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      try {
-        const parsedCart: CartItem[] = JSON.parse(storedCart);
-        if (parsedCart.length === 0) {
-          navigate("/cart");
-        } else {
-          setCartItems(parsedCart);
-        }
-      } catch (err) {
-        console.error("Failed to parse cart:", err);
-        navigate("/cart");
-      }
-    } else {
-      navigate("/cart");
-    }
+    loadCart();
   }, [isAuthenticated, navigate]);
+
+  const loadCart = async () => {
+    try {
+      setCartLoading(true);
+      const items = await getCart();
+      
+      if (items.length === 0) {
+        navigate("/cart");
+      } else {
+        setCartItems(items);
+      }
+    } catch (err) {
+      console.error("Failed to load cart:", err);
+      navigate("/cart");
+    } finally {
+      setCartLoading(false);
+    }
+  };
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -105,7 +99,7 @@ const Checkout = () => {
     try {
       const orderData = {
         items: cartItems.map((item) => ({
-          productId: item.productId || item.id,
+          productId: item.productId,
           quantity: item.quantity,
           size: item.size || null,
           color: item.color || null,
@@ -124,7 +118,8 @@ const Checkout = () => {
 
       const { data } = await axios.post("/api/orders", orderData);
 
-      localStorage.removeItem("cart");
+      // Clear cart from database after successful order
+      await clearCartAPI();
 
       navigate("/my-orders", {
         state: { orderSuccess: true, orderId: data.data.order.id },
@@ -143,6 +138,18 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  // Show loading spinner while fetching cart
+  if (cartLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
+        <Header />
+        <div className="flex items-center justify-center py-32">
+          <div className="w-12 h-12 border-2 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return null;
